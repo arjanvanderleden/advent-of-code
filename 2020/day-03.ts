@@ -1,25 +1,32 @@
 import { treeMapData, Position } from './day-03.data';
 
-const nextStep = (position: Position) => ({
-    x: position.x + 3,
-    y: position.y + 1,
+const nextStep = (slope: Position, position: Position) => ({
+    x: position.x + slope.x,
+    y: position.y + slope.y,
 })
 
-const steps = [];
 const notFinished = (position: Position) => position.y < treeMapData.height;
-const doNextStep = (position: Position) => {
+const doNextStep = (slope: Position, position: Position, steps: string[]) => {
     steps.push(treeMapData.treeMap[position.y][position.x % treeMapData.width])
-    return nextStep(position);
+    return nextStep(slope, position);
 }
 
-const walk = (position: Position) => notFinished(position) ?
-        walk(doNextStep(position)) :
-        position;
 const startPosition: Position = {x: 0, y: 0 };
+const slopes = [
+    {x: 1, y: 1},
+    {x: 3, y: 1},
+    {x: 5, y: 1},
+    {x: 7, y: 1},
+    {x: 1, y: 2}
+];
 
-const endPosition = walk(startPosition);
+const slopeTrees = slopes.map(slope => {
+    const steps = [];
+    const walk = (position: Position) => notFinished(position) ?
+        walk(doNextStep(slope, position, steps)) :
+        steps.filter(c => c=== "#").length;
+    return walk(startPosition)
+})
 
-console.log(endPosition.x)
-console.log(steps.length)
-console.log(treeMapData.height)
-console.log(steps.filter(c => c === '#').length)
+console.log(slopeTrees)
+console.log(slopeTrees.reduce((p,v) => p * v, 1))
